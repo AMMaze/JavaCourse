@@ -1,16 +1,16 @@
-package Lesson_1.Marafon;
+package Lesson_1.Marafon.Course;
 
 import Lesson_1.Marafon.Competitors.Competitor;
 
-public class Cross extends Obstacle {
+public class Water extends Obstacle {
     int length;
 
-    public Cross(int length) {
+    public Water(int length) {
         this.length = length;
     }
 
     @Override
     public void doIt(Competitor competitor) {
-        competitor.run(length);
+        competitor.swim(length);
     }
 }

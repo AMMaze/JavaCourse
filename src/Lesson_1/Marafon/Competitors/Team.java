@@ -20,6 +20,14 @@ public class Team {
         }
     }
 
+    public void showWinners() {
+        for (Competitor it: competitors) {
+            if (it.isOnDistance()) {
+                it.info();
+            }
+        }
+    }
+
     public ArrayList<Competitor> getCompetitors() {
         return competitors;
     }

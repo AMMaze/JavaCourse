@@ -1,4 +1,4 @@
-package Lesson_2;
+package Lesson_2.ArraySum;
 
 public class MyArrayDataException extends Exception {
 

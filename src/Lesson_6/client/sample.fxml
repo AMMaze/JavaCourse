@@ -11,7 +11,6 @@
 <?import javafx.scene.control.DialogPane?>
 <VBox alignment="center" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121"
       fx:controller="Lesson_6.client.Controller">
-
     <TextArea fx:id="textArea" editable="false" VBox.vgrow="ALWAYS" />
     <HBox>
         <TextField fx:id="textField" onAction="#sendMsg" promptText="Введите текст" HBox.hgrow="ALWAYS" />

@@ -10,7 +10,7 @@ import java.util.Scanner;
 import java.util.Vector;
 
 public class Main {
-    private Vector<ClientHandler> clients;
+    private final Vector<ClientHandler> clients;
 
     public Main() {
         clients = new Vector<>();
@@ -24,7 +24,9 @@ public class Main {
             while (true) {
                 socket = server.accept();
                 System.out.println("Клиент подключился");
-                clients.add(new ClientHandler(socket, this));
+                synchronized (clients) {
+                    clients.add(new ClientHandler(socket, this, clients.size()));
+                }
             }
 
         } catch (IOException e) {
@@ -47,5 +49,18 @@ public class Main {
         for (ClientHandler o : clients) {
             o.sendMsg(msg);
         }
+    }
+
+    public boolean removeClient(int id) {
+        synchronized (clients) {
+            try {
+                clients.remove(id);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        System.out.println("Клиент отключился.");
+        return true;
     }
 }

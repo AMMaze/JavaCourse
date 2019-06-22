@@ -11,13 +11,15 @@ public class ClientHandler {
     private DataInputStream in;
     private DataOutputStream out;
     private Main server;
+    private int id;
 
-    public ClientHandler(Socket socket, Main server) {
+    public ClientHandler(Socket socket, Main server, int id) {
         try {
             this.socket = socket;
             this.server = server;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
+            this.id = id;
 
             new Thread(new Runnable() {
                 @Override
@@ -30,6 +32,7 @@ public class ClientHandler {
                             }
                             server.broadCastMsg(str);
                         }
+                        server.removeClient(id);
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {

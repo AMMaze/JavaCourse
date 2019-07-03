@@ -76,7 +76,7 @@ public class Main {
         for (ClientHandler o : clients) {
             if (o.getNick().equals(nickTo)) {
                 o.sendMsg("from " + from.getNick() + ": " + msg);
-                from.sendMsg("to " + nickTo + ": " + msg);
+                from.sendMsg(from.getNick() + " to " + nickTo + ": " + msg);
                 return;
             }
         }

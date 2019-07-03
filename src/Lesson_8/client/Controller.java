@@ -15,6 +15,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Optional;
 
 
 public class Controller {
@@ -222,7 +223,23 @@ public class Controller {
 
     public void selectClient(MouseEvent mouseEvent) {
         if(mouseEvent.getClickCount() == 2) {
-            System.out.println("Двойной клик");
+//            System.out.println("Двойной клик");
+            Platform.runLater(() -> {
+                TextInputDialog inputDialog = new TextInputDialog();
+
+                String name = clientList.getSelectionModel().getSelectedItem();
+
+                inputDialog.setTitle("Личное сообщение");
+                inputDialog.setHeaderText("Отправить сообщение " + name + ":");
+                inputDialog.setContentText("Сообщение: ");
+
+                String res = inputDialog.showAndWait().orElse(null);
+                if (res != null) {
+                    try {
+                        out.writeUTF("/w " + name + " " + res);
+                    } catch (IOException ignore) {}
+                }
+            });
         }
     }
 

@@ -47,6 +47,7 @@ public class ClientHandler {
                                         sendMsg("/authok " + newNick);
                                         nick = newNick;
                                         server.subscribe(ClientHandler.this);
+                                        blackList = BlacklistService.getBlacklist(newNick);
                                         break;
                                     } else {
                                         sendMsg("Учетная запись уже используется");
@@ -82,8 +83,15 @@ public class ClientHandler {
                                 }
                                 if (str.startsWith("/blacklist ")) {
                                     String[] tokens = str.split(" ");
-                                    blackList.add(tokens[1]);
-                                    sendMsg("Вы добавили пользователя " + tokens[1] + " в черный список");
+                                    if (!blackList.contains(tokens[1])) {
+                                        blackList.add(tokens[1]);
+                                        BlacklistService.addToBlacklist(nick, tokens[1]);
+                                        sendMsg("Вы добавили пользователя " + tokens[1] + " в черный список");
+                                    } else {
+                                        blackList.remove(tokens[1]);
+                                        BlacklistService.removeFromBlacklist(nick, tokens[1]);
+                                        sendMsg("Вы удалили пользователя " + tokens[1] + " из черного списка");
+                                    }
                                 }
                             } else {
                                 server.broadcastMsg(ClientHandler.this, nick + ": " + str);

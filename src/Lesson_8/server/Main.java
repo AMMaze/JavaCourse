@@ -19,6 +19,7 @@ public class Main {
 
         try {
             AuthService.connection();
+            BlacklistService.connection();
             server = new ServerSocket(8189);
             System.out.println("Сервер запущен");
 
@@ -75,6 +76,10 @@ public class Main {
     public void sendPersonalMsg(ClientHandler from, String nickTo, String msg) {
         for (ClientHandler o : clients) {
             if (o.getNick().equals(nickTo)) {
+                if (!o.checkBlackList(from.getNick())) {
+                    from.sendMsg("Клиент с ником " + nickTo + " добавил вас в чёрный список");
+                    return;
+                }
                 o.sendMsg("from " + from.getNick() + ": " + msg);
                 from.sendMsg(from.getNick() + " to " + nickTo + ": " + msg);
                 return;

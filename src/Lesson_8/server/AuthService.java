@@ -33,6 +33,21 @@ public class AuthService {
         return null;
     }
 
+    public static String addNewUser(String login, String nickname, String pass) {
+        String sql = String.format("SELECT login, nickname FROM main WHERE login = '%s' AND nickname = '%s'", login, nickname);
+        try {
+            ResultSet rs = stmt.executeQuery(sql);
+            if (!rs.next()) {
+                int id = Integer.parseInt(stmt.executeQuery("SELECT COUNT(*) FROM main").getString(1));
+                stmt.executeUpdate(String.format("INSERT INTO main VALUES (%d, '%s', '%s', '%s')", id + 1, login, pass, nickname));
+                return nickname;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static void disconnect() {
         try {
             connection.close();

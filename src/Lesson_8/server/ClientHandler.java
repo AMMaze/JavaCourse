@@ -53,6 +53,17 @@ public class ClientHandler {
                                 } else {
                                     sendMsg("Неверный логин/пароль");
                                 }
+                            } else if (str.startsWith("/reg")) {
+                                String[] tokens = str.split(" ");
+                                String newNick = AuthService.addNewUser(tokens[1], tokens[2], tokens[3]);
+                                if (newNick != null) {
+                                    sendMsg("/authok " + newNick);
+                                    nick = newNick;
+                                    server.subscribe(ClientHandler.this);
+                                    break;
+                                } else {
+                                    sendMsg("Данный логин/никнейм уже занят");
+                                }
                             }
                             server.broadcastMsg(ClientHandler.this, str);
                         }

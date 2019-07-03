@@ -51,6 +51,24 @@ public class Controller {
     @FXML
     VBox msgList;
 
+    @FXML
+    TextField regLoginField;
+
+    @FXML
+    TextField regPasswordField;
+
+    @FXML
+    TextField regNickField;
+
+    @FXML
+    HBox regPanel;
+
+    @FXML
+    HBox sysMsg;
+
+    @FXML
+    Label sysTxt;
+
 
     private boolean isAuthorized;
 
@@ -63,6 +81,8 @@ public class Controller {
             bottomPanel.setManaged(false);
             clientList.setVisible(false);
             clientList.setManaged(false);
+            regPanel.setVisible(true);
+            regPanel.setManaged(true);
         } else {
             upperPanel.setVisible(false);
             upperPanel.setManaged(false);
@@ -70,6 +90,8 @@ public class Controller {
             bottomPanel.setManaged(true);
             clientList.setVisible(true);
             clientList.setManaged(true);
+            regPanel.setVisible(false);
+            regPanel.setManaged(false);
         }
     }
 
@@ -80,7 +102,8 @@ public class Controller {
     final String IP_ADRESS = "localhost";
     final int PORT = 8189;
 
-    String nick;
+    private String nick = "Server_Message";
+    private String authString;
 
     public void connect() {
         try {
@@ -98,9 +121,9 @@ public class Controller {
                             if (str.startsWith("/authok")) {
                                 setAuthorized(true);
                                 nick = str.split(" ")[1];
+                                Platform.runLater(() -> msgList.getChildren().clear());
                                 break;
                             } else {
-//                                textArea.appendText(str + "\n");
                                 addMsg(str);
                             }
                         }
@@ -168,9 +191,24 @@ public class Controller {
             connect();
         }
         try {
-            out.writeUTF("/auth " + loginField.getText() + " " + passwordField.getText());
+            authString = "/auth " + loginField.getText() + " " + passwordField.getText();
+            out.writeUTF(authString);
             loginField.clear();
             passwordField.clear();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void tryToReg(ActionEvent actionEvent) {
+        if(socket == null || socket.isClosed()) {
+            connect();
+        }
+        try {
+            out.writeUTF("/reg " + regLoginField.getText() + " " + regNickField.getText() + " " + regPasswordField.getText());
+            regLoginField.clear();
+            regPasswordField.clear();
+            regNickField.clear();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -213,5 +251,16 @@ public class Controller {
                 scrollPane.widthProperty().addListener((observable -> msg.setMaxWidth(scrollPane.getWidth() * 0.7)));
             }
         });
+    }
+
+    public void showSysMessage(String msg) {
+        Platform.runLater(() -> {
+            sysMsg.setVisible(true);
+            sysTxt.setText(msg);
+        });
+    }
+
+    public void hideSysMessage() {
+        Platform.runLater(() -> sysMsg.setVisible(false));
     }
 }

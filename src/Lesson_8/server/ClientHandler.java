@@ -43,7 +43,7 @@ public class ClientHandler {
                                 String newNick = AuthService.getNickByLoginAndPass(tokens[1], tokens[2]);
                                 if (newNick != null) {
                                     if (!server.isNickBusy(newNick)) {
-                                        sendMsg("/authok");
+                                        sendMsg("/authok " + newNick);
                                         nick = newNick;
                                         server.subscribe(ClientHandler.this);
                                         break;
@@ -64,9 +64,8 @@ public class ClientHandler {
                                     out.writeUTF("/serverclosed");
                                     break;
                                 }
-                                if (str.startsWith("/w ")) { // /w nick3 lsdfhldf sdkfjhsdf wkerhwr
+                                if (str.startsWith("/w ")) {
                                     String[] tokens = str.split(" ", 3);
-                                    //String m = str.substring(tokens[1].length() + 4);
                                     server.sendPersonalMsg(ClientHandler.this, tokens[1], tokens[2]);
                                 }
                                 if (str.startsWith("/blacklist ")) {

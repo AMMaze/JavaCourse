@@ -4,11 +4,11 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.io.DataInputStream;
@@ -21,8 +21,8 @@ import java.util.logging.Handler;
 
 
 public class Controller {
-    @FXML
-    TextArea textArea;
+//    @FXML
+//    TextArea textArea;
 
     @FXML
     TextField textField;
@@ -44,6 +44,13 @@ public class Controller {
 
     @FXML
     ListView<String> clientList;
+
+    @FXML
+    ScrollPane scrollPane;
+
+    @FXML
+    VBox msgList;
+
 
     private boolean isAuthorized;
 
@@ -73,6 +80,8 @@ public class Controller {
     final String IP_ADRESS = "localhost";
     final int PORT = 8189;
 
+    String nick;
+
     public void connect() {
         try {
             socket = new Socket(IP_ADRESS, PORT);
@@ -88,9 +97,11 @@ public class Controller {
                             String str = in.readUTF();
                             if (str.startsWith("/authok")) {
                                 setAuthorized(true);
+                                nick = str.split(" ")[1];
                                 break;
                             } else {
-                                textArea.appendText(str + "\n");
+//                                textArea.appendText(str + "\n");
+                                addMsg(str);
                             }
                         }
 
@@ -109,7 +120,8 @@ public class Controller {
                                     }
                                 });
                             } else {
-                                textArea.appendText(str + "\n");
+//                                textArea.appendText(str + "\n");
+                                addMsg(str);
                             }
                         }
 
@@ -170,12 +182,36 @@ public class Controller {
         }
     }
 
-//    @FXML
-//    private void closeButtonAction(){
-//        // get a handle to the stage
-//        Stage stage = (Stage) closeButton.getScene().getWindow();
-//        out.writeUTF("/close")
-//        // do what you have to do
-//        stage.close();
-//    }
+    public boolean ifMyMsg(String msg) {
+        return msg.startsWith(nick);
+    }
+
+    public void addMsg(String str) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                HBox hBox = new HBox();
+                Label msg = new Label();
+                msg.setWrapText(true);
+                hBox.getChildren().add(msg);
+                hBox.setStyle("-fx-padding: 1;");
+                msg.setPadding(new Insets(5, 5, 5, 5));
+                msg.setMaxWidth(scrollPane.getWidth() * 0.7);
+                if (ifMyMsg(str)) {
+                    msg.setText(str.split(" ", 2)[1]);
+                    hBox.setAlignment(Pos.CENTER_RIGHT);
+                    msg.setStyle("-fx-text-fill: black;" +
+                            "-fx-background-color: white");
+                } else {
+                    msg.setText(str);
+                    hBox.setAlignment(Pos.CENTER_LEFT);
+                    msg.setStyle("-fx-text-fill: white;" +
+                            "-fx-background-color: blue");
+                }
+                msgList.getChildren().add(hBox);
+                msgList.heightProperty().addListener(observable -> scrollPane.setVvalue(1D));
+                scrollPane.widthProperty().addListener((observable -> msg.setMaxWidth(scrollPane.getWidth() * 0.7)));
+            }
+        });
+    }
 }

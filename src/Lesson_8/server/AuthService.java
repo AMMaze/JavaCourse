@@ -9,7 +9,7 @@ public class AuthService {
     public static void connection() {
         try {
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:mainDB.db");
+            connection = DriverManager.getConnection("jdbc:sqlite:DBUsers.db");
             stmt = connection.createStatement();
         } catch (Exception e) {
             e.printStackTrace();

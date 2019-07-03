@@ -9,8 +9,13 @@
 <?import javafx.scene.control.PasswordField?>
 
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.geometry.Insets?>
 <VBox alignment="center" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.121"
-      fx:controller="Lesson_6.client.Controller">
+      fx:controller="Lesson_8.client.Controller">
+    <stylesheets><URL value="@/Lesson_8/css/Style.css"/></stylesheets>
 
     <HBox fx:id="upperPanel">
         <TextField HBox.hgrow="ALWAYS" promptText="Логин" fx:id="loginField"/>
@@ -18,15 +23,26 @@
         <Button text="Aвторизоваться" onAction="#tryToAuth"/>
     </HBox>
 
+<!--    <HBox fx:id="regPanel">-->
+<!--        <TextField HBox.hgrow="ALWAYS" promptText="Логин" fx:id="regLoginField"/>-->
+<!--        <PasswordField  promptText="Пароль" fx:id="regPasswordField" onAction="#tryToAuth"/>-->
+<!--        <TextField HBox.hgrow="ALWAYS" promptText="Логин" fx:id="regNickField"/>-->
+<!--        <Button text="Регистрация" onAction="#tryToReg"/>-->
+<!--    </HBox>-->
+
     <HBox VBox.vgrow="ALWAYS">
         <VBox HBox.hgrow="ALWAYS">
-            <TextArea fx:id="textArea" editable="false" VBox.vgrow="ALWAYS" />
+            <ScrollPane fx:id="scrollPane" VBox.vgrow="ALWAYS" fitToWidth="true">
+                <padding><Insets top="15" bottom="15" left="15" right="15"/></padding>
+                <VBox fx:id="msgList" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" spacing="5"/>
+            </ScrollPane>
             <HBox fx:id="bottomPanel" managed="false" visible="false">
                 <TextField fx:id="textField" onAction="#sendMsg" promptText="Введите текст" HBox.hgrow="ALWAYS" />
                 <Button fx:id="btn1" onAction="#sendMsg" text="Send" />
             </HBox>
         </VBox>
-        <ListView fx:id="clientList" managed="false" onMouseClicked="#selectClient" visible="false"></ListView>
+        <ListView fx:id="clientList" managed="false" onMouseClicked="#selectClient" visible="false"
+                  prefWidth="100" HBox.hgrow="NEVER"></ListView>
     </HBox>
 
 </VBox>

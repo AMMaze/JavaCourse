@@ -2,6 +2,7 @@ package Lesson_8.server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class ClientHandler {
                                     sendMsg("Данный логин/никнейм уже занят");
                                 }
                             }
-                            server.broadcastMsg(ClientHandler.this, str);
+//                            server.broadcastMsg(ClientHandler.this, str);
                         }
 
                         while (true) {
@@ -85,9 +86,10 @@ public class ClientHandler {
                                     sendMsg("Вы добавили пользователя " + tokens[1] + " в черный список");
                                 }
                             } else {
-                                server.broadcastMsg(ClientHandler.this,nick + ": " + str);
+                                server.broadcastMsg(ClientHandler.this, nick + ": " + str);
                             }
                         }
+                    } catch (EOFException e) {
                     } catch (IOException e) {
                         e.printStackTrace();
                     } finally {

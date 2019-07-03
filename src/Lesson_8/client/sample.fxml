@@ -28,9 +28,10 @@
         <Button text="Регистрация" onAction="#tryToReg"/>
     </HBox>
 
-<!--    <HBox fx:id="sysMsg" HBox.hgrow="ALWAYS" visible="false" padding="5 5 5 5">-->
-<!--        <Label fx:id="sysTxt" />-->
-<!--    </HBox>-->
+    <HBox fx:id="sysMsg" HBox.hgrow="ALWAYS" visible="false" managed="false">
+        <padding><Insets top="5" bottom="5" left="5" right="5"/></padding>
+        <Label fx:id="sysTxt" />
+    </HBox>
 
     <HBox VBox.vgrow="ALWAYS">
         <VBox HBox.hgrow="ALWAYS">

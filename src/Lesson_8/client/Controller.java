@@ -3,21 +3,18 @@ package Lesson_8.client;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.logging.Handler;
+import java.net.UnknownHostException;
 
 
 public class Controller {
@@ -99,15 +96,16 @@ public class Controller {
     DataInputStream in;
     DataOutputStream out;
 
-    final String IP_ADRESS = "localhost";
+    final String IP_ADDRESS = "localhost";
     final int PORT = 8189;
 
     private String nick = "Server_Message";
     private String authString;
+    private volatile boolean reconnect = false;
 
     public void connect() {
         try {
-            socket = new Socket(IP_ADRESS, PORT);
+            socket = new Socket(IP_ADDRESS, PORT);
 
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
@@ -129,7 +127,15 @@ public class Controller {
                         }
 
                         while (true) {
-                            String str = in.readUTF();
+                            String str;
+                            try {
+                                str = in.readUTF();
+                            } catch (EOFException e) {
+                                showSysMessage("Потеряно соединение с сервером");
+                                tryToReconnect();
+                                hideSysMessage();
+                                continue;
+                            }
                             if (str.equals("/serverclosed")) break;
                             if (str.startsWith("/clientlist")) {
                                 String[] tokens = str.split(" ");
@@ -143,7 +149,6 @@ public class Controller {
                                     }
                                 });
                             } else {
-//                                textArea.appendText(str + "\n");
                                 addMsg(str);
                             }
                         }
@@ -178,7 +183,8 @@ public class Controller {
 
     public void sendMsg() {
         try {
-            out.writeUTF(textField.getText());
+            if (!reconnect)
+                out.writeUTF(textField.getText());
             textField.clear();
             textField.requestFocus();
         } catch (IOException e) {
@@ -256,11 +262,41 @@ public class Controller {
     public void showSysMessage(String msg) {
         Platform.runLater(() -> {
             sysMsg.setVisible(true);
+            sysMsg.setManaged(true);
             sysTxt.setText(msg);
         });
     }
 
     public void hideSysMessage() {
-        Platform.runLater(() -> sysMsg.setVisible(false));
+        Platform.runLater(() -> {
+            sysMsg.setVisible(false);
+            sysMsg.setManaged(false);
+        });
+    }
+
+    public void tryToReconnect() {
+        reconnect = true;
+        while(reconnect) {
+            try {
+                socket = new Socket(IP_ADDRESS, PORT);
+                in = new DataInputStream(socket.getInputStream());
+                out = new DataOutputStream(socket.getOutputStream());
+                out.writeUTF(authString);
+                System.out.println(authString);
+                while(true) {
+                    String str = in.readUTF();
+                    if (str.startsWith("/authok")) {
+                        reconnect = false;
+                        break;
+                    }
+                }
+            } catch (IOException ignore) {}
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e ){
+                e.printStackTrace();
+            }
+        }
     }
 }

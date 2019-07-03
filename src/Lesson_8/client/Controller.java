@@ -2,10 +2,12 @@ package Lesson_8.client;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
@@ -145,7 +147,7 @@ public class Controller {
                                     public void run() {
                                         clientList.getItems().clear();
                                         for (int i = 1; i < tokens.length; i++) {
-                                            clientList.getItems().add(tokens[i]);
+                                            clientList.getItems().add(nick.equals(tokens[i]) ? "Вы: " + tokens[i] : tokens[i]);
                                         }
                                     }
                                 });
@@ -224,24 +226,43 @@ public class Controller {
     public void selectClient(MouseEvent mouseEvent) {
         if(mouseEvent.getClickCount() == 2) {
 //            System.out.println("Двойной клик");
-            Platform.runLater(() -> {
-                TextInputDialog inputDialog = new TextInputDialog();
+            sendMsgDialog();
+        } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem item1 = new MenuItem("Отправить сообщение");
 
-                String name = clientList.getSelectionModel().getSelectedItem();
+            MenuItem item2 = new MenuItem("Чёрный список");
 
-                inputDialog.setTitle("Личное сообщение");
-                inputDialog.setHeaderText("Отправить сообщение " + name + ":");
-                inputDialog.setContentText("Сообщение: ");
-
-                String res = inputDialog.showAndWait().orElse(null);
-                if (res != null) {
-                    try {
-                        out.writeUTF("/w " + name + " " + res);
-                    } catch (IOException ignore) {}
-                }
+            item1.setOnAction(actionEvent -> sendMsgDialog());
+            item2.setOnAction(actionEvent -> {
+                try {
+                    out.writeUTF("/blacklist " + clientList.getSelectionModel().getSelectedItem());
+                } catch (IOException ignore) {}
             });
+
+            contextMenu.getItems().addAll(item1, item2);
+            contextMenu.show(clientList, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         }
     }
+
+    public void sendMsgDialog() {
+        Platform.runLater(() -> {
+            TextInputDialog inputDialog = new TextInputDialog();
+
+            String name = clientList.getSelectionModel().getSelectedItem();
+
+            inputDialog.setTitle("Личное сообщение");
+            inputDialog.setHeaderText("Отправить сообщение " + name + ":");
+            inputDialog.setContentText("Сообщение: ");
+
+            String res = inputDialog.showAndWait().orElse(null);
+            if (res != null) {
+                try {
+                    out.writeUTF("/w " + name + " " + res);
+                } catch (IOException ignore) {}
+            }
+        });
+    };
 
     public boolean ifMyMsg(String msg) {
         return msg.startsWith(nick);

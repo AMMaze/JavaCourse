@@ -76,7 +76,7 @@ public class Main {
     public void sendPersonalMsg(ClientHandler from, String nickTo, String msg) {
         for (ClientHandler o : clients) {
             if (o.getNick().equals(nickTo)) {
-                if (!o.checkBlackList(from.getNick())) {
+                if (o.checkBlackList(from.getNick())) {
                     from.sendMsg("Клиент с ником " + nickTo + " добавил вас в чёрный список");
                     return;
                 }

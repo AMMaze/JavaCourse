@@ -223,25 +223,27 @@ public class Controller {
         }
     }
 
+    ContextMenu ctxMenu;
+
     public void selectClient(MouseEvent mouseEvent) {
         if(mouseEvent.getClickCount() == 2) {
 //            System.out.println("Двойной клик");
             sendMsgDialog();
         } else if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-            ContextMenu contextMenu = new ContextMenu();
-            MenuItem item1 = new MenuItem("Отправить сообщение");
-
-            MenuItem item2 = new MenuItem("Чёрный список");
-
-            item1.setOnAction(actionEvent -> sendMsgDialog());
-            item2.setOnAction(actionEvent -> {
-                try {
-                    out.writeUTF("/blacklist " + clientList.getSelectionModel().getSelectedItem());
-                } catch (IOException ignore) {}
-            });
-
-            contextMenu.getItems().addAll(item1, item2);
-            contextMenu.show(clientList, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+//            ContextMenu contextMenu = new ContextMenu();
+//            MenuItem item1 = new MenuItem("Отправить сообщение");
+//
+//            MenuItem item2 = new MenuItem("Чёрный список");
+//
+//            item1.setOnAction(actionEvent -> sendMsgDialog());
+//            item2.setOnAction(actionEvent -> {
+//                try {
+//                    out.writeUTF("/blacklist " + clientList.getSelectionModel().getSelectedItem());
+//                } catch (IOException ignore) {}
+//            });
+//
+//            contextMenu.getItems().addAll(item1, item2);
+            ctxMenu.show(clientList, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         }
     }
 

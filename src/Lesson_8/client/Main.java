@@ -5,7 +5,11 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class Main extends Application {
 
@@ -16,6 +20,20 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader();
         Parent root = loader.load(getClass().getResourceAsStream("sample.fxml"));
         c = loader.getController();
+
+        c.ctxMenu = new ContextMenu();
+        MenuItem item1 = new MenuItem("Отправить сообщение");
+
+        MenuItem item2 = new MenuItem("Чёрный список");
+
+        item1.setOnAction(actionEvent -> c.sendMsgDialog());
+        item2.setOnAction(actionEvent -> {
+            try {
+                c.out.writeUTF("/blacklist " + c.clientList.getSelectionModel().getSelectedItem());
+            } catch (IOException ignore) {}
+        });
+
+        c.ctxMenu.getItems().addAll(item1, item2);
 
         primaryStage.setTitle("Chat 2k19");
         Scene scene = new Scene(root, 350, 350);
